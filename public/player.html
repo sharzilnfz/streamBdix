@@ -1,0 +1,1598 @@
+<!-- StreamBDIX Web Player - By Corpse -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>StreamBDIX Player</title>
+    <meta
+      name="description"
+      content="Stream BDIX content directly in your browser or any media player — no Stremio required."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #080810;
+        --surface: #0f0f1a;
+        --surface2: #161625;
+        --surface3: #1d1d30;
+        --border: #ffffff0f;
+        --border2: #ffffff18;
+        --accent: #7c5cfc;
+        --accent2: #a67cff;
+        --accent-glow: #7c5cfc44;
+        --green: #22d3a5;
+        --red: #f05060;
+        --yellow: #f5c500;
+        --text: #f0f0f8;
+        --muted: #6060a0;
+        --muted2: #8888bb;
+      }
+
+      html,
+      body {
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', system-ui, sans-serif;
+        font-size: 15px;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── SCROLLBAR ── */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 3px;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        height: 60px;
+      }
+
+      .logo {
+        font-size: 18px;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--accent2), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.5px;
+        flex-shrink: 0;
+        text-decoration: none;
+      }
+
+      .header-sep {
+        width: 1px;
+        height: 20px;
+        background: var(--border2);
+        flex-shrink: 0;
+      }
+
+      .header-tag {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+
+      .header-spacer {
+        flex: 1;
+      }
+
+      .back-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted2);
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: color 0.15s;
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 8px;
+      }
+      .back-btn:hover {
+        color: var(--text);
+        background: var(--surface2);
+      }
+      .back-btn svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      /* ── MAIN LAYOUT ── */
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 32px 24px 64px;
+      }
+
+      /* ── SEARCH SECTION ── */
+      .search-section {
+        margin-bottom: 36px;
+      }
+
+      .search-title {
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 6px;
+      }
+
+      .search-sub {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+
+      .search-row {
+        display: flex;
+        gap: 10px;
+      }
+
+      .search-box {
+        flex: 1;
+        position: relative;
+      }
+
+      .search-box svg {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        color: var(--muted);
+        pointer-events: none;
+      }
+
+      #searchInput {
+        width: 100%;
+        height: 48px;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: 12px;
+        color: var(--text);
+        font-size: 15px;
+        font-family: inherit;
+        padding: 0 16px 0 44px;
+        outline: none;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+
+      #searchInput:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+      }
+
+      #searchInput::placeholder {
+        color: var(--muted);
+      }
+
+      .type-toggle {
+        display: flex;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .type-btn {
+        padding: 0 18px;
+        height: 48px;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: inherit;
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .type-btn.active {
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .search-btn {
+        height: 48px;
+        padding: 0 24px;
+        background: linear-gradient(135deg, var(--accent), #5a3ccc);
+        border: none;
+        border-radius: 12px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition:
+          opacity 0.15s,
+          transform 0.1s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .search-btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+      .search-btn:active {
+        transform: translateY(0);
+      }
+      .search-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .search-btn svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      /* ── SERIES EXTRAS ── */
+      .series-extras {
+        display: none;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .series-extras.show {
+        display: flex;
+      }
+      .num-input {
+        width: 90px;
+        height: 44px;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 14px;
+        font-family: inherit;
+        padding: 0 12px;
+        outline: none;
+      }
+      .num-input:focus {
+        border-color: var(--accent);
+      }
+
+      /* ── STATUS ── */
+      #status {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 18px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font-size: 14px;
+        color: var(--muted2);
+        margin-bottom: 24px;
+      }
+      #status.show {
+        display: flex;
+      }
+      .spinner {
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--border2);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        flex-shrink: 0;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ── RESULTS ── */
+      #results {
+        display: none;
+      }
+      #results.show {
+        display: block;
+      }
+
+      .results-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+
+      .results-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--muted2);
+      }
+
+      .results-count {
+        font-size: 12px;
+        color: var(--muted);
+        background: var(--surface2);
+        padding: 4px 10px;
+        border-radius: 20px;
+      }
+
+      /* ── STREAM CARDS ── */
+      .streams-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 14px;
+      }
+
+      .stream-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px;
+        transition:
+          border-color 0.15s,
+          transform 0.15s,
+          background 0.15s;
+        cursor: default;
+      }
+
+      .stream-card:hover {
+        border-color: var(--border2);
+        background: var(--surface2);
+        transform: translateY(-2px);
+      }
+
+      .card-top {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .source-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: var(--accent-glow);
+        color: var(--accent2);
+        border: 1px solid var(--accent) 33;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .quality-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: var(--surface3);
+        color: var(--muted2);
+        border: 1px solid var(--border);
+        margin-left: auto;
+      }
+
+      .quality-badge.hq {
+        color: var(--green);
+        background: #22d3a510;
+        border-color: #22d3a522;
+      }
+      .quality-badge.mq {
+        color: var(--yellow);
+        background: #f5c50010;
+        border-color: #f5c50022;
+      }
+
+      .stream-url {
+        font-size: 11px;
+        color: var(--muted);
+        font-family: 'SF Mono', Consolas, monospace;
+        background: var(--surface3);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-bottom: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .card-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .card-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 38px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-decoration: none;
+      }
+
+      .card-btn svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .btn-play {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn-play:hover {
+        background: var(--accent2);
+      }
+
+      .btn-vlc {
+        background: var(--surface3);
+        color: var(--muted2);
+        border: 1px solid var(--border2);
+      }
+      .btn-vlc:hover {
+        background: var(--surface2);
+        color: var(--text);
+      }
+
+      .btn-m3u {
+        background: var(--surface3);
+        color: var(--muted2);
+        border: 1px solid var(--border2);
+        flex: none;
+        padding: 0 12px;
+      }
+      .btn-m3u:hover {
+        background: var(--surface2);
+        color: var(--green);
+        border-color: var(--green) 44;
+      }
+
+      /* ── VIDEO PLAYER ── */
+      #playerSection {
+        display: none;
+        margin-top: 0;
+        margin-bottom: 40px;
+      }
+      #playerSection.show {
+        display: block;
+      }
+
+      .player-wrap {
+        background: #000;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--border2);
+        box-shadow: 0 24px 60px #00000080;
+        position: relative;
+      }
+
+      .player-header {
+        padding: 10px 14px;
+        background: var(--surface);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .player-close {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--surface3);
+        border: none;
+        border-radius: 8px;
+        color: var(--muted);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all 0.15s;
+      }
+      .player-close:hover {
+        background: #f0506022;
+        color: var(--red);
+      }
+      .player-close svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .player-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+      }
+
+      .player-source {
+        font-size: 11px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      /* subtitle toolbar */
+      .sub-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        background: var(--surface2);
+        border-top: 1px solid var(--border);
+        flex-wrap: wrap;
+      }
+
+      .sub-label {
+        font-size: 12px;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+
+      .sub-file-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        height: 32px;
+        padding: 0 14px;
+        background: var(--surface3);
+        border: 1px solid var(--border2);
+        border-radius: 8px;
+        color: var(--muted2);
+        font-size: 12px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .sub-file-btn:hover {
+        background: var(--surface);
+        color: var(--text);
+      }
+      .sub-file-btn svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      .sub-toggle-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        height: 32px;
+        padding: 0 14px;
+        background: var(--surface3);
+        border: 1px solid var(--border2);
+        border-radius: 8px;
+        color: var(--muted2);
+        font-size: 12px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .sub-toggle-btn.on {
+        background: var(--accent-glow);
+        border-color: var(--accent);
+        color: var(--accent2);
+      }
+      .sub-toggle-btn svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      .sub-name {
+        font-size: 11px;
+        color: var(--green);
+        background: #22d3a510;
+        border: 1px solid #22d3a522;
+        border-radius: 20px;
+        padding: 3px 10px;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: none;
+      }
+      .sub-name.show {
+        display: block;
+      }
+
+      .sub-remove {
+        height: 28px;
+        width: 28px;
+        background: var(--surface3);
+        border: 1px solid var(--border2);
+        border-radius: 6px;
+        color: var(--muted);
+        font-size: 14px;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+      }
+      .sub-remove.show {
+        display: flex;
+      }
+      .sub-remove:hover {
+        color: var(--red);
+        border-color: var(--red) 44;
+      }
+
+      /* audio warning */
+      .audio-warn {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        background: #f5c50010;
+        border-top: 1px solid #f5c50030;
+        font-size: 12px;
+        color: var(--yellow);
+      }
+      .audio-warn.show {
+        display: flex;
+      }
+      .audio-warn svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+      }
+      .audio-warn a {
+        color: var(--accent2);
+        text-decoration: underline;
+        cursor: pointer;
+      }
+
+      video {
+        width: 100%;
+        max-height: 68vh;
+        background: #000;
+        display: block;
+      }
+
+      /* ── EMPTY STATE ── */
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--muted);
+      }
+
+      .empty-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        display: block;
+      }
+
+      .empty-state h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--muted2);
+        margin-bottom: 8px;
+      }
+
+      .empty-state p {
+        font-size: 14px;
+      }
+
+      /* ── SOURCE FILTERS ── */
+      .source-filters {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+
+      .filter-chip {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        color: var(--muted2);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .filter-chip.active {
+        background: var(--accent-glow);
+        border-color: var(--accent) 44;
+        color: var(--accent2);
+      }
+
+      /* ── TOAST ── */
+      .toast {
+        position: fixed;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: var(--surface2);
+        color: var(--text);
+        padding: 12px 22px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 500;
+        opacity: 0;
+        transition: 0.25s;
+        border: 1px solid var(--border2);
+        box-shadow: 0 8px 24px #00000080;
+        z-index: 1000;
+        white-space: nowrap;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* ── HOW TO USE INFO BOX ── */
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 14px;
+        margin-bottom: 36px;
+      }
+
+      .info-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+
+      .info-icon {
+        font-size: 22px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .info-card h4 {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+
+      .info-card p {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 640px) {
+        main {
+          padding: 20px 16px 48px;
+        }
+        .search-row {
+          flex-wrap: wrap;
+        }
+        .type-toggle,
+        .search-btn {
+          width: 100%;
+        }
+        .type-btn {
+          flex: 1;
+        }
+        .search-title {
+          font-size: 22px;
+        }
+        .streams-grid {
+          grid-template-columns: 1fr;
+        }
+        .card-actions {
+          flex-wrap: wrap;
+        }
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="/" class="logo">StreamBDIX</a>
+      <div class="header-sep"></div>
+      <span class="header-tag">Web Player</span>
+      <div class="header-spacer"></div>
+      <a href="/" class="back-btn">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M19 12H5M12 5l-7 7 7 7" />
+        </svg>
+        Back to Config
+      </a>
+    </header>
+
+    <main>
+      <!-- Search Section -->
+      <div class="search-section">
+        <h1 class="search-title">Search & Stream</h1>
+        <p class="search-sub">
+          Search movies or series from all BDIX sources — stream in browser,
+          open in VLC, or export an M3U playlist.
+        </p>
+
+        <div class="search-row">
+          <div class="search-box">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search for a movie or series..."
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+          <div class="type-toggle">
+            <button
+              class="type-btn active"
+              id="btnMovie"
+              onclick="setType('movie')"
+            >
+              Movie
+            </button>
+            <button class="type-btn" id="btnSeries" onclick="setType('series')">
+              Series
+            </button>
+          </div>
+          <button class="search-btn" id="searchBtn" onclick="doSearch()">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            Search
+          </button>
+        </div>
+
+        <div class="series-extras" id="seriesExtras">
+          <input
+            type="number"
+            class="num-input"
+            id="seasonNum"
+            placeholder="Season"
+            min="1"
+            value="1"
+          />
+          <input
+            type="number"
+            class="num-input"
+            id="episodeNum"
+            placeholder="Episode"
+            min="1"
+            value="1"
+          />
+        </div>
+      </div>
+
+      <!-- How To Info Cards -->
+      <div class="info-grid" id="infoGrid">
+        <div class="info-card">
+          <div class="info-icon">🌐</div>
+          <div>
+            <h4>Play in Browser</h4>
+            <p>
+              Click <strong>Play</strong> on any result to stream directly in
+              your browser. Works on any device.
+            </p>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">📺</div>
+          <div>
+            <h4>Open in VLC / Any Player</h4>
+            <p>
+              Click <strong>Open in Player</strong> to open the stream URL
+              directly in VLC, mpv, or any media app.
+            </p>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">📋</div>
+          <div>
+            <h4>Export M3U Playlist</h4>
+            <p>
+              Download an <strong>.m3u</strong> file to open in Kodi, Infuse,
+              nPlayer, or any IPTV-compatible app.
+            </p>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">📱</div>
+          <div>
+            <h4>All Devices</h4>
+            <p>
+              Share the proxy stream URL
+              <code style="font-size: 11px; color: var(--accent2)"
+                >/api/proxy?url=...</code
+              >
+              with any device on your network.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div id="status">
+        <div class="spinner"></div>
+        <span id="statusText">Searching all sources...</span>
+      </div>
+
+      <!-- Video Player -->
+      <div id="playerSection">
+        <div class="player-wrap">
+          <!-- title bar -->
+          <div class="player-header">
+            <button
+              class="player-close"
+              onclick="closePlayer()"
+              title="Close player"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+            <span class="player-title" id="playerTitle">-</span>
+            <span class="player-source" id="playerSource"></span>
+          </div>
+
+          <!-- audio codec warning (shown only when browser can't decode) -->
+          <div class="audio-warn" id="audioWarn">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+              />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            <span
+              ><strong>No audio?</strong> This file likely uses AC3/DTS audio
+              that browsers can't decode.
+              <a onclick="openInPlayerCurrent()">Open in VLC</a> for full audio
+              &amp; subtitle support.</span
+            >
+          </div>
+
+          <!-- video element -->
+          <video id="videoEl" controls preload="metadata"></video>
+
+          <!-- subtitle toolbar -->
+          <div class="sub-toolbar">
+            <span class="sub-label">🗒 Subtitles:</span>
+            <button
+              class="sub-file-btn"
+              onclick="document.getElementById('subFileInput').click()"
+              title="Load .srt or .vtt subtitle file"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              Load Subtitle (.srt / .vtt)
+            </button>
+            <span class="sub-name" id="subName"></span>
+            <button
+              class="sub-toggle-btn"
+              id="subToggleBtn"
+              onclick="toggleSubtitles()"
+              title="Toggle subtitles on/off"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
+                <polyline points="17 2 12 7 7 2" />
+              </svg>
+              Subtitles Off
+            </button>
+            <button
+              class="sub-remove"
+              id="subRemoveBtn"
+              onclick="removeSubtitle()"
+              title="Remove subtitle"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                style="width: 12px; height: 12px"
+              >
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+            <input
+              type="file"
+              id="subFileInput"
+              accept=".srt,.vtt,.ass"
+              style="display: none"
+              onchange="loadSubtitleFile(this)"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="results">
+        <div class="results-header">
+          <span class="results-title" id="resultsTitle">Results</span>
+          <div style="display: flex; gap: 8px; align-items: center">
+            <button
+              class="card-btn btn-m3u"
+              onclick="downloadAllM3U()"
+              title="Download all results as M3U playlist"
+              style="height: 32px; font-size: 11px"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                style="width: 13px; height: 13px"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Download All M3U
+            </button>
+            <span class="results-count" id="resultsCount">0 streams</span>
+          </div>
+        </div>
+        <div class="source-filters" id="sourceFilters"></div>
+        <div class="streams-grid" id="streamsGrid"></div>
+      </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      let currentType = 'movie';
+      let allStreams = [];
+      let activeFilter = 'all';
+      let lastQuery = '';
+      let currentStreamIndex = null; // track which stream is playing
+      let subtitleBlobUrl = null;
+      let subtitlesEnabled = false;
+
+      function setType(t) {
+        currentType = t;
+        document
+          .getElementById('btnMovie')
+          .classList.toggle('active', t === 'movie');
+        document
+          .getElementById('btnSeries')
+          .classList.toggle('active', t === 'series');
+        document
+          .getElementById('seriesExtras')
+          .classList.toggle('show', t === 'series');
+      }
+
+      document
+        .getElementById('searchInput')
+        .addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') doSearch();
+        });
+
+      function setStatus(show, text) {
+        const el = document.getElementById('status');
+        el.classList.toggle('show', show);
+        if (text) document.getElementById('statusText').textContent = text;
+      }
+
+      async function doSearch() {
+        const query = document.getElementById('searchInput').value.trim();
+        if (!query) {
+          toast('Enter a title to search');
+          return;
+        }
+
+        closePlayer();
+        document.getElementById('infoGrid').style.display = 'none';
+        allStreams = [];
+        lastQuery = query;
+        activeFilter = 'all';
+
+        const btn = document.getElementById('searchBtn');
+        btn.disabled = true;
+        setStatus(true, `Searching for "${query}"...`);
+        document.getElementById('results').classList.remove('show');
+
+        const params = new URLSearchParams({ query, type: currentType });
+        if (currentType === 'series') {
+          params.set('season', document.getElementById('seasonNum').value || 1);
+          params.set(
+            'episode',
+            document.getElementById('episodeNum').value || 1,
+          );
+        }
+
+        try {
+          const res = await fetch('/api/search?' + params.toString());
+          const data = await res.json();
+          allStreams = data.streams || [];
+        } catch (e) {
+          toast('Search failed. Is the server running?');
+          allStreams = [];
+        }
+
+        btn.disabled = false;
+        setStatus(false);
+
+        if (allStreams.length === 0) renderEmpty(query);
+        else renderResults(query);
+      }
+
+      function renderEmpty(query) {
+        const grid = document.getElementById('streamsGrid');
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1">
+            <span class="empty-icon">🔍</span>
+            <h3>No streams found</h3>
+            <p>No results for "<strong>${escHtml(query)}</strong>" — try a different title or check source availability.</p>
+          </div>`;
+        document.getElementById('results').classList.add('show');
+        document.getElementById('resultsTitle').textContent =
+          `No results for "${query}"`;
+        document.getElementById('resultsCount').textContent = '0 streams';
+        document.getElementById('sourceFilters').innerHTML = '';
+      }
+
+      function renderResults(query) {
+        const sources = [...new Set(allStreams.map((s) => s.name))];
+        const filtersEl = document.getElementById('sourceFilters');
+        filtersEl.innerHTML =
+          `<button class="filter-chip active" data-src="all" onclick="setFilter('all')">All Sources</button>` +
+          sources
+            .map(
+              (s) =>
+                `<button class="filter-chip" data-src="${escHtml(s)}" onclick="setFilter('${escHtml(s)}')">${escHtml(s)}</button>`,
+            )
+            .join('');
+
+        document.getElementById('resultsTitle').textContent =
+          `Results for "${query}"`;
+        document.getElementById('results').classList.add('show');
+        applyFilter();
+      }
+
+      function setFilter(src) {
+        activeFilter = src;
+        document.querySelectorAll('.filter-chip').forEach((c) => {
+          c.classList.toggle('active', c.dataset.src === src);
+        });
+        applyFilter();
+      }
+
+      function applyFilter() {
+        const filtered = getFilteredStreams();
+        document.getElementById('resultsCount').textContent =
+          filtered.length + ' stream' + (filtered.length !== 1 ? 's' : '');
+        document.getElementById('streamsGrid').innerHTML = filtered
+          .map((s, i) => buildCard(s, i))
+          .join('');
+      }
+
+      function buildCard(stream, idx) {
+        const title = stream.title || 'Unknown';
+        const qualityClass =
+          /4k|2160/i.test(title) || /1080/i.test(title)
+            ? 'hq'
+            : /720/i.test(title)
+              ? 'mq'
+              : '';
+        return `
+        <div class="stream-card">
+          <div class="card-top">
+            <span class="source-badge">${escHtml(stream.name)}</span>
+            <span class="quality-badge ${qualityClass}">${escHtml(title)}</span>
+          </div>
+          <div class="stream-url" title="${escHtml(stream.url)}">${escHtml(stream.url)}</div>
+          <div class="card-actions">
+            <button class="card-btn btn-play" onclick="playStream(${idx})">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
+              Play
+            </button>
+            <button class="card-btn btn-vlc" onclick="openInPlayer(${idx})">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Open in Player
+            </button>
+            <button class="card-btn btn-m3u" onclick="downloadM3U(${idx})" title="Download M3U">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </button>
+          </div>
+        </div>`;
+      }
+
+      function getFilteredStreams() {
+        return activeFilter === 'all'
+          ? allStreams
+          : allStreams.filter((s) => s.name === activeFilter);
+      }
+
+      function playStream(idx) {
+        const filtered = getFilteredStreams();
+        const stream = filtered[idx];
+        if (!stream) return;
+        currentStreamIndex = idx;
+
+        const proxyUrl = '/api/proxy?url=' + encodeURIComponent(stream.url);
+        const video = document.getElementById('videoEl');
+
+        // Remove existing tracks
+        Array.from(video.querySelectorAll('track')).forEach((t) => t.remove());
+
+        video.src = proxyUrl;
+
+        // Re-add subtitle track if one was loaded
+        if (subtitleBlobUrl) {
+          injectTrack(video, subtitleBlobUrl);
+        }
+
+        video.load();
+        video.play().catch(() => {});
+
+        document.getElementById('playerTitle').textContent =
+          lastQuery + (stream.title ? ' — ' + stream.title : '');
+        document.getElementById('playerSource').textContent = stream.name;
+        document.getElementById('playerSection').classList.add('show');
+        document
+          .getElementById('playerSection')
+          .scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Show audio warning after a short delay if video has no audio
+        const warn = document.getElementById('audioWarn');
+        warn.classList.remove('show');
+        video.addEventListener('canplay', function handler() {
+          video.removeEventListener('canplay', handler);
+          // Check if audio track exists and is decodable
+          const hasAudio =
+            video.mozHasAudio ||
+            video.webkitAudioDecodedByteCount > 0 ||
+            (video.audioTracks && video.audioTracks.length > 0);
+          // Show warning for MKV files or if file likely has problematic codec
+          const isMkv = stream.url.toLowerCase().includes('.mkv');
+          if (isMkv) warn.classList.add('show');
+        });
+
+        toast('Loading stream...');
+      }
+
+      // ── Open current playing stream in external player ────────────────────
+      function openInPlayerCurrent() {
+        const filtered = getFilteredStreams();
+        if (currentStreamIndex === null) return;
+        const stream = filtered[currentStreamIndex];
+        if (stream) openInPlayer(currentStreamIndex);
+      }
+
+      function openInPlayer(idx) {
+        const filtered = getFilteredStreams();
+        const stream = filtered[idx];
+        if (!stream) return;
+        const proxyUrl =
+          location.origin + '/api/proxy?url=' + encodeURIComponent(stream.url);
+        const a = document.createElement('a');
+        a.href = 'vlc://' + proxyUrl;
+        a.click();
+        setTimeout(() => {
+          navigator.clipboard
+            .writeText(proxyUrl)
+            .then(() => {
+              toast('Stream URL copied — paste it into VLC / any player');
+            })
+            .catch(() => {
+              toast('Open this URL in your media player');
+            });
+        }, 400);
+      }
+
+      // ── M3U Download ─────────────────────────────────────────────────────
+      function downloadM3U(idx) {
+        const filtered = getFilteredStreams();
+        const stream = filtered[idx];
+        if (!stream) return;
+        const proxyUrl =
+          location.origin + '/api/proxy?url=' + encodeURIComponent(stream.url);
+        const content = `#EXTM3U\n#EXTINF:-1 tvg-name="${lastQuery}" group-title="${stream.name}",${lastQuery} [${stream.title || 'Stream'}]\n${proxyUrl}\n`;
+        triggerDownload(
+          content,
+          `${lastQuery.replace(/[^a-z0-9]/gi, '_')}_${stream.name}.m3u`,
+        );
+        toast('M3U downloaded');
+      }
+
+      function downloadAllM3U() {
+        if (allStreams.length === 0) return;
+        const lines = ['#EXTM3U'];
+        allStreams.forEach((s) => {
+          const proxyUrl =
+            location.origin + '/api/proxy?url=' + encodeURIComponent(s.url);
+          lines.push(
+            `#EXTINF:-1 tvg-name="${lastQuery}" group-title="${s.name}",${lastQuery} [${s.title || 'Stream'}] - ${s.name}`,
+          );
+          lines.push(proxyUrl);
+        });
+        triggerDownload(
+          lines.join('\n') + '\n',
+          `${lastQuery.replace(/[^a-z0-9]/gi, '_')}_all.m3u`,
+        );
+        toast('All streams exported as M3U');
+      }
+
+      function triggerDownload(content, filename) {
+        const blob = new Blob([content], { type: 'audio/x-mpegurl' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      // ── Subtitle Loading ──────────────────────────────────────────────────
+      function srtToVtt(srt) {
+        // Convert SRT timestamp format (00:00:00,000) to WebVTT (00:00:00.000)
+        // and prepend the WEBVTT header
+        return (
+          'WEBVTT\n\n' +
+          srt
+            .replace(/\r\n/g, '\n')
+            .replace(/\r/g, '\n')
+            .replace(/(\d{2}:\d{2}:\d{2}),(\d{3})/g, '$1.$2') // comma → dot in timestamps
+            .trim() +
+          '\n'
+        );
+      }
+
+      function injectTrack(video, blobUrl) {
+        const track = document.createElement('track');
+        track.kind = 'subtitles';
+        track.label = 'Loaded Subtitle';
+        track.srclang = 'en';
+        track.src = blobUrl;
+        track.default = true;
+        video.appendChild(track);
+        // Force show mode
+        if (video.textTracks && video.textTracks[0]) {
+          video.textTracks[0].mode = subtitlesEnabled ? 'showing' : 'hidden';
+        }
+      }
+
+      function loadSubtitleFile(input) {
+        const file = input.files[0];
+        if (!file) return;
+        const video = document.getElementById('videoEl');
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          let text = e.target.result;
+
+          // Convert SRT or ASS to WebVTT
+          let vttBlob;
+          if (file.name.toLowerCase().endsWith('.vtt')) {
+            vttBlob = new Blob([text], { type: 'text/vtt' });
+          } else {
+            // Handles .srt and basic .ass (strips ASS markup)
+            let converted = text;
+            if (file.name.toLowerCase().endsWith('.ass')) {
+              // Strip ASS format — extract only dialogue lines
+              const lines = text.split('\n');
+              const dialogues = [];
+              let idx = 1;
+              lines.forEach((line) => {
+                const m = line.match(
+                  /^Dialogue:\s*\d+,([\d:.]+),([\d:.]+),[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,(.*)/,
+                );
+                if (m) {
+                  const toVttTime = (t) =>
+                    t.replace(/:(\d{2})$/, '.$1').replace(/^(\d):/, '0$1:');
+                  const stripped = m[3].replace(/\{[^}]*\}/g, '').trim();
+                  if (stripped) {
+                    dialogues.push(
+                      `${idx}\n${toVttTime(m[1])} --> ${toVttTime(m[2])}\n${stripped}`,
+                    );
+                    idx++;
+                  }
+                }
+              });
+              converted = dialogues.join('\n\n');
+            }
+            converted = srtToVtt(converted);
+            vttBlob = new Blob([converted], { type: 'text/vtt' });
+          }
+
+          // Revoke old blob URL
+          if (subtitleBlobUrl) URL.revokeObjectURL(subtitleBlobUrl);
+          subtitleBlobUrl = URL.createObjectURL(vttBlob);
+
+          // Remove old tracks and add new one
+          Array.from(video.querySelectorAll('track')).forEach((t) =>
+            t.remove(),
+          );
+          injectTrack(video, subtitleBlobUrl);
+
+          // Enable subtitles automatically on load
+          subtitlesEnabled = true;
+          setTimeout(() => {
+            if (video.textTracks && video.textTracks[0]) {
+              video.textTracks[0].mode = 'showing';
+            }
+            updateSubToggleUI();
+          }, 100);
+
+          // Show file name
+          const nameEl = document.getElementById('subName');
+          nameEl.textContent = file.name;
+          nameEl.classList.add('show');
+          document.getElementById('subRemoveBtn').classList.add('show');
+
+          toast(`✅ Subtitle loaded: ${file.name}`);
+        };
+        reader.readAsText(file);
+        input.value = ''; // reset so same file can be re-loaded
+      }
+
+      function toggleSubtitles() {
+        const video = document.getElementById('videoEl');
+        subtitlesEnabled = !subtitlesEnabled;
+        if (video.textTracks && video.textTracks[0]) {
+          video.textTracks[0].mode = subtitlesEnabled ? 'showing' : 'hidden';
+        }
+        updateSubToggleUI();
+        toast(subtitlesEnabled ? 'Subtitles ON' : 'Subtitles OFF');
+      }
+
+      function updateSubToggleUI() {
+        const btn = document.getElementById('subToggleBtn');
+        btn.classList.toggle('on', subtitlesEnabled);
+        btn.textContent = subtitlesEnabled ? '◉ Subtitles On' : 'Subtitles Off';
+        // re-add icon
+        btn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+          ${subtitlesEnabled ? 'Subtitles On' : 'Subtitles Off'}`;
+      }
+
+      function removeSubtitle() {
+        const video = document.getElementById('videoEl');
+        Array.from(video.querySelectorAll('track')).forEach((t) => t.remove());
+        if (subtitleBlobUrl) {
+          URL.revokeObjectURL(subtitleBlobUrl);
+          subtitleBlobUrl = null;
+        }
+        subtitlesEnabled = false;
+        document.getElementById('subName').classList.remove('show');
+        document.getElementById('subRemoveBtn').classList.remove('show');
+        updateSubToggleUI();
+        toast('Subtitle removed');
+      }
+
+      function closePlayer() {
+        const video = document.getElementById('videoEl');
+        video.pause();
+        video.src = '';
+        Array.from(video.querySelectorAll('track')).forEach((t) => t.remove());
+        document.getElementById('playerSection').classList.remove('show');
+        document.getElementById('audioWarn').classList.remove('show');
+        currentStreamIndex = null;
+      }
+
+      function escHtml(s) {
+        return String(s || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+      }
+    </script>
+  </body>
+</html>
