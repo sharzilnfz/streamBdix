@@ -368,6 +368,7 @@ const server = http.createServer((req, res) => {
           );
           return;
         }
+        
         const testProcess = spawn(
           cloudflaredPath,
           ['tunnel', 'run', '--token', token],
